@@ -1,52 +1,61 @@
 #include "Solve_Quad_Eq.h"
 #include <math.h>
 #include <assert.h>
-int Solve_Quad_Eq(double a, double b, double c, double * x1, double * x2){
-     double D = b*b - 4*a*c;
+#include "F_comp.h"
+#include "Input.h"
+Solve_Linear_Eq_Res Solve_Linear_Eq(Coeff coeff){
+    Solve_Linear_Eq_Res result = { .x1 = NAN, .num_of_roots = 0 };
+    if (F_close_comp(coeff.b, 0.0)){
 
-     if (isnan(a) || isnan(b) || isnan(c)){
+        if (F_close_comp(coeff.c, 0.0)){
 
-          *x1 = NAN;
-          *x2 = NAN;
-          return ENT_ERR;
+            result.num_of_roots = SQE_INFINITE_SOL;
+            return result;
+        }
+        result.num_of_roots = 0;
+        return result;
+    }
 
+    result.x1 = -coeff.c/coeff.b;
+    result.num_of_roots = 1;
+    return result;
+}
 
-     }
-      if (fabs((a-0.0))<ABS_ACC && fabs((b-0.0))<ABS_ACC && fabs((c-0.0))<ABS_ACC ) {
+Solve_Quad_Eq_Res Solve_Quad_Eq(Coeff coeff){
+    Solve_Quad_Eq_Res result = { .x1 = NAN, .x2 = NAN, .num_of_roots = 0 };
 
-          *x1 = NAN;
-          *x2 = NAN;
-          return SQE_INFINITE_SOL;
+    double D = coeff.b*coeff.b - 4*coeff.a*coeff.c;
 
-     }
-     if (D<0 || (fabs((a-0.0))<ABS_ACC && fabs((b-0.0))<ABS_ACC&& fabs((c-0.0))>ABS_ACC)){
+    if (isnan(coeff.a) || isnan(coeff.b) || isnan(coeff.c)){
 
-          *x1 = NAN;
-          *x2 = NAN;
-          return 0;
+        result.num_of_roots = ENT_ERR;
+        return result;
+    }
+    if (D<0){
 
-     }
-     if ((D-0.0)<ABS_ACC){
-          *x1 = -b/(2*a);
-          *x2 = NAN;
-          return 1;
-     }
-     if ((fabs((a-0.0))<ABS_ACC && fabs((b-0.0))>ABS_ACC)){
-            *x1 = -c/b;
-            *x2 = NAN;
-            return 1;
-     }
+        result.num_of_roots = 0;
+        return result;
+    }
+    double S_D = sqrt(D);
 
-     if (D>0){
-          *x1 =  (-b + sqrt(D))/(2*a);
-          *x2 = (-b - sqrt(D))/(2*a);
+    if (F_close_comp(coeff.a, 0.0)) {
+        Solve_Linear_Eq_Res result_Solve_Linear_Eq = Solve_Linear_Eq(coeff);
+        result.x1 = result_Solve_Linear_Eq.x1;
+        result.num_of_roots = result_Solve_Linear_Eq.num_of_roots;
+        return result;
+    }
 
-          return 2;
-     }
-     else{
-     *x1 = NAN;
-     *x2 = NAN;
-     return 52;
-     assert(1);
-     }
+    if (F_close_comp(D, 0.0)){
+
+        result.x1 = -coeff.b/(2*coeff.a);
+        result.num_of_roots = 1;
+        return result;
+    }
+
+    result.x1 =  (-coeff.b + S_D)/(2*coeff.a);
+    result.x2 = (-coeff.b - S_D)/(2*coeff.a);
+    result.x1 = result.x1 > result.x2 ? result.x1: result.x2;
+    result.x2 = result.x1 < result.x2 ? result.x1: result.x2;
+    result.num_of_roots = 2;
+    return result;
 }

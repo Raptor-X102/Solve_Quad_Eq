@@ -1,4 +1,5 @@
 #ifndef OUTPUT_ROOTS
 #define OUTPUT_ROOTS
-void Output_Roots (double a, double b, double c, double * x1, double * x2);
+#include "Solve_Quad_Eq.h"
+void Output_Roots (Solve_Quad_Eq_Res result);
 #endif

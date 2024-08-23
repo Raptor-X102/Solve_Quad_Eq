@@ -1,24 +1,27 @@
 #include "Solve_Quad_Eq.h"
 #include <stdio.h>
 #include "Output_Roots.h"
+#include "Clear_buf.h"
 #include <assert.h>
-void Output_Roots (double a, double b, double c, double * x1, double * x2){
+#define RESET   "\033[0m"
+#define RED     "\033[1;31m"
+#define YELLOW  "\033[1;33m"
+#define WHITE   "\033[1;37m"
+#define GREEN   "\033[1;32m"
 
-    switch(Solve_Quad_Eq(a,b,c,x1,x2)){
-    case SQE_INFINITE_SOL: printf("Уравнение имеет бесконечное число решений\n");
+void Output_Roots (Solve_Quad_Eq_Res result){
+
+    switch(result.num_of_roots){
+    case SQE_INFINITE_SOL: printf("%sУравнение имеет бесконечное число решений%s\n",GREEN, RESET);
         break;
-    case ENT_ERR: printf("Неверный ввод данных\n");
-        while(getchar()!='\n'){
-            continue;
-        }
+    case 0: printf("%sУравнение не имеет действительных решений%s\n", GREEN, RESET);
         break;
-    case 0: printf("Уравнение не имеет действительных решений\n");
+    case 1: printf("%sУравнение имеет единственное решение: %.3lg%s\n", GREEN, result.x1, RESET);
         break;
-    case 1: printf("Уравнение имеет единственное решение: %.3lg\n", *x1);
-        break;
-    case 2: printf("Уравнение имеет два решения: %.3lg и %.3lg \n", *x1,*x2);
+    case 2: printf("%sУравнение имеет два решения: %.3lg и %.3lg %s\n", GREEN, result.x1, result.x2, RESET);
         break;
 
-    default: assert(1);
+    default:
+        assert("Ошибка" && 0);
     }
 }
