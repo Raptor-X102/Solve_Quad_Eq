@@ -1,17 +1,20 @@
 #include "Solve_Quad_Eq.h"
-#include <math.h>
-#include <assert.h>
-#include "F_comp.h"
-#include "Input.h"
+
+/// @brief Функция, решающая линейное уравнения
+///
+/// @param[in] coeff параметр, передающий коэффициенты уравнения типа bx + c = 0.
+///
+/// @return структуру типа Solve_Linear_Eq_Res
 Solve_Linear_Eq_Res Solve_Linear_Eq(Coeff coeff){
     Solve_Linear_Eq_Res result = { .x1 = NAN, .num_of_roots = 0 };
     if (F_close_comp(coeff.b, 0.0)){
 
         if (F_close_comp(coeff.c, 0.0)){
 
-            result.num_of_roots = SQE_INFINITE_SOL;
+            result.num_of_roots = SOLVE_QUAD_EQ_INFINITE_SOL;
             return result;
         }
+
         result.num_of_roots = 0;
         return result;
     }
@@ -20,7 +23,11 @@ Solve_Linear_Eq_Res Solve_Linear_Eq(Coeff coeff){
     result.num_of_roots = 1;
     return result;
 }
-
+/// @brief Функция, решающая квадратное уравнения
+///
+/// @param [in] coeff параметр, передающий коэффициенты уравнения типа ax^2 + bx + c = 0.
+///
+/// @return структуру типа Solve_Quad_Eq_Res
 Solve_Quad_Eq_Res Solve_Quad_Eq(Coeff coeff){
     Solve_Quad_Eq_Res result = { .x1 = NAN, .x2 = NAN, .num_of_roots = 0 };
 
@@ -54,8 +61,9 @@ Solve_Quad_Eq_Res Solve_Quad_Eq(Coeff coeff){
 
     result.x1 =  (-coeff.b + S_D)/(2*coeff.a);
     result.x2 = (-coeff.b - S_D)/(2*coeff.a);
+    double temp = result.x1;
     result.x1 = result.x1 > result.x2 ? result.x1: result.x2;
-    result.x2 = result.x1 < result.x2 ? result.x1: result.x2;
+    result.x2 = temp < result.x2 ? temp: result.x2;
     result.num_of_roots = 2;
     return result;
 }
